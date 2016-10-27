@@ -10,7 +10,7 @@ app.controller('userController', function($scope, $http) {
         });
 });
 
-app.controller('groupController', function($scope, $http) {
+app.controller('groupController', function($scope, $http, $timeout) {
     var groupMap = {};
     $scope.selectedGroup = null;
     $scope.isActive = function(gid) {
@@ -45,6 +45,41 @@ app.controller('groupController', function($scope, $http) {
                 })(groups[i]);
             }
         });
+
+    $scope.isAddNewGroup = false;
+    $scope.toggleAddNewGroup = function(){
+        $scope.isAddNewGroup = !$scope.isAddNewGroup;
+        setTimeout(function(){
+            angular.element('input[name="add-group"]').trigger('focus');
+        });
+    };
+
+    $scope.addNewGroup = function(){
+        $http.get("/api/user/friends")
+            .then(function(response) {
+                console.log(response);
+                var friends = response.data.friends;
+                var data = [];
+
+                for (var i=0;i<friends.length;i++){
+                    data.push({
+                        uid: friends[i].uid,
+                        name: friends[i].username,
+                        photo: friends[i].photo
+                    })
+                }
+
+                $scope.$emit('openModalEvent', {
+                    data: data,
+                    url: '/api/group/create',
+                    body: {
+                        group: {
+                            nama: $scope.addNewGroupInput
+                        }
+                    }
+                });
+            });
+    }
 });
 
 app.controller('friendController', function($scope, $http) {
@@ -82,16 +117,31 @@ app.controller('friendController', function($scope, $http) {
                 })(friends[i]);
             }
         });
+
+    $scope.isAddNewUser = false;
+    $scope.toggleAddNewUser = function(){
+        $scope.isAddNewUser = !$scope.isAddNewUser;
+        setTimeout(function() {
+            angular.element('input[name="add-friend"]').trigger('focus');
+        });
+    };
+
+    $scope.addNewUser = function(){
+        console.log($scope.addNewUserInput);
+    }
 });
 
 app.controller('chatController', function($scope, $http, $timeout) {
     $scope.user = {};
     $scope.hasUserData = {};
+
     $scope.$on('openChatEvent', function(event, args) {
         var friend = args["friend"];
         var group = args["group"];
 
         if (friend) {
+            $scope.dataShowing = friend;
+
             $http.get("/api/chat/user/" + friend.uid)
                 .then(function(response) {
                     var chats = response.data.chats;
@@ -130,6 +180,8 @@ app.controller('chatController', function($scope, $http, $timeout) {
                     $scope.title = friend.username;
                 });
         } else if (group) {
+            $scope.dataShowing = group;
+
             $http.get("/api/chat/group/" + group.gid)
                 .then(function(response) {
                     var chats = response.data.chats;
@@ -160,6 +212,57 @@ app.controller('chatController', function($scope, $http, $timeout) {
 
     $scope.isMyChat = function(chat){
         return chat.chat_from == window.uid;
+    };
+
+    $scope.inviteUser = function(){
+        console.log('inviteUser');
+
+        $http.get("/api/user/friends")
+            .then(function(response) {
+                console.log(response);
+                var friends = response.data.friends;
+                var data = [];
+
+                for (var i=0;i<friends.length;i++){
+                    data.push({
+                        uid: friends[i].uid,
+                        name: friends[i].username,
+                        photo: friends[i].photo
+                    })
+                }
+
+                $scope.$emit('openModalEvent', {
+                    data: data,
+                    url: '/api/group/invite',
+                    body: {
+                        gid: $scope.dataShowing.gid
+                    }
+                });
+            });
+    };
+
+    $scope.kickUser = function(){
+        $http.get("/api/group/list/" + $scope.dataShowing.gid)
+            .then(function(response) {
+                var members = response.data.members;
+                var data = [];
+
+                for (var i=0;i<members.length;i++){
+                    data.push({
+                        uid: friends[i].uid,
+                        name: members[i].username,
+                        photo: members[i].photo
+                    })
+                }
+
+                $scope.$emit('openModalEvent', {
+                    data: data,
+                    url: '/api/group/kick',
+                    body: {
+                        gid: $scope.dataShowing.gid
+                    }
+                });
+            });
     }
 });
 
@@ -195,15 +298,72 @@ app.controller('sendMessageController', function($scope, $http) {
     }
 });
 
+app.controller('chooseUserController', function($scope, $http, $timeout) {
+    $scope.$on('showModalEvent', function(event, args) {
+        $scope.url = args.url;
+        $scope.data = args.data;
+        $scope.body = args.body;
+        $scope.selection = [];
+        $scope.show();
+    });
+
+    $scope.show = function(){
+        $('.modal').modal('show')
+    };
+
+    $scope.hide = function(){
+        $('.modal').modal('hide')
+    };
+
+    // toggle selection for a given fruit by name
+    $scope.toggleSelection = function toggleSelection(fruitName) {
+        var idx = $scope.selection.indexOf(fruitName);
+
+        // is currently selected
+        if (idx > -1) {
+            $scope.selection.splice(idx, 1);
+        } else { // is newly selected
+            $scope.selection.push(fruitName);
+        }
+    };
+    
+    $scope.submit = function(){
+        var body = $scope.body || {};
+        body.users = $scope.selection;
+
+        $http.post($scope.url, body)
+            .then(function(response){
+                console.log(response);
+                $scope.hide();
+            });
+    }
+});
+
 app.controller('appController', function($scope) {
     $scope.$on('clickChatEvent', function(event, args) {
         $scope.$broadcast('openChatEvent', args);
     });
+
+    $scope.$on('openModalEvent', function(event, args) {
+        console.log('appController openModalEvent');
+        $scope.$broadcast('showModalEvent', args);
+    });
 });
 
+
 $(function(){
-    $('.add-new-group, .add-new-user').click(function(){
-        var target = $(this).data('target');
-        $(target).toggle();
-    })
+    // $('.add-new-group, .add-new-user').click(function(){
+    //     var target = $(this).data('target');
+    //     $(target).toggle();
+    // });
+
+    // Init first time page load
+    var clearIntervalHandler = setInterval(function(){
+        var $listItem = $('.group-panel, .friend-panel').find('.friend-list li');
+        if ($listItem.length) {
+            $listItem.get(0).click();
+            clearInterval(clearIntervalHandler)
+        }
+    }, 1000);
+
 });

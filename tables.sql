@@ -35,17 +35,18 @@ CREATE TABLE groups(
   gid int(11) AUTO_INCREMENT,
   nama varchar(255),
   admin int(11),
+  token varchar(255),
   FOREIGN KEY (admin) REFERENCES user(uid),
   PRIMARY KEY (gid)
 );
-INSERT INTO groups(nama, admin) VALUES
-('Group A', 1),
-('Group B', 2),
-('Group C', 3),
-('Group D', 4),
-('Group E', 5),
-('Group F', 6),
-('Group G', 7);
+INSERT INTO groups(nama, admin, token) VALUES
+('Group A', 1, 'opa92ujealsdbEsd81DGh'),
+('Group B', 2, 'q3KEhJlorb2u2hKkrD4E'),
+('Group C', 3, 'OcjoPzVzqHyO2FWlmYdj'),
+('Group D', 4, 'PKpvswV9YE8UMGfkpnK4'),
+('Group E', 5, 'rCOSGiO6y9IgG6qLw9Dx'),
+('Group F', 6, 'TJPbqn2yB7qaH6lt61ct'),
+('Group G', 7, '1ioeakkMjrtdawXOZh7k');
 
 DROP TABLE IF EXISTS group_members;
 CREATE TABLE group_members(
@@ -66,7 +67,7 @@ INSERT INTO group_members(gid, uid) VALUES
 (2, 7),
 (3, 1),
 (3, 3),
-(3, 6),
+(3, 5),
 (3, 6),
 (4, 8),
 (4, 9),

@@ -7,6 +7,7 @@ var randtoken = require('rand-token');
 var userConsumer = require('../consumers/user');
 var async = require('async');
 
+// Api for new user registration
 router.post('/register', function(req, res) {
   var user = req.body;
 
@@ -46,6 +47,7 @@ router.post('/register', function(req, res) {
   })
 });
 
+// Api for user login
 router.post('/login', function(req, res) {
   var user = req.body;
 
@@ -91,6 +93,7 @@ router.post('/login', function(req, res) {
   })
 });
 
+// Api for user logout
 router.get('/logout', function(req, res) {
   req.session.destroy(function(err){
     if (err) {
@@ -101,6 +104,7 @@ router.get('/logout', function(req, res) {
   });
 });
 
+// Get user data by uid
 router.get('/uid/:uid', function(req, res) {
   var uid = req.params.uid;
   var result;
@@ -134,6 +138,7 @@ router.get('/uid/:uid', function(req, res) {
   })
 });
 
+// Get user own data
 router.get('/me', function(req, res) {
   var uid = req.session.uid;
   var result;
@@ -169,6 +174,7 @@ router.get('/me', function(req, res) {
   })
 });
 
+// List a user's friends
 router.get('/friends', function(req, res) {
   var uid = req.session.uid;
   var result;
@@ -211,6 +217,7 @@ router.get('/friends', function(req, res) {
   })
 });
 
+// List a user's groups
 router.get('/groups', function(req, res) {
   var uid = req.session.uid;
   var result;
@@ -239,6 +246,39 @@ router.get('/groups', function(req, res) {
         } else {
           res.json({
             groups: result
+          });
+        }
+      })
+    }
+  })
+});
+
+// Api for user add friend
+router.post('/add', function(req, res) {
+  var user = req.body;
+  var uid = req.session.uid;
+
+  mysql.getConnection(function(err, connection){
+    if (err) {
+      res.json(err)
+    } else {
+      async.series([function(callback){
+        connection.query('INSERT INTO user_friend(uid, fid, create_time) VALUES(?, ?, NOW())', [uid, user.uid], function(err, rows, fields) {
+          if (!err) {
+            callback(null)
+          } else callback(err)
+        });
+      }], function(err){
+        connection.release();
+
+        if (err) {
+          res.status(500);
+          res.json({
+            error: err.message()
+          })
+        } else {
+          res.json({
+            success: 1
           });
         }
       })

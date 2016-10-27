@@ -7,9 +7,9 @@ body {
   margin-top:20px;
 }
 
-.add-item {
-  display: none;
-}
+/*.add-item {*/
+  /*display: none;*/
+/*}*/
 
 i.glyphicon {
   cursor: pointer;
