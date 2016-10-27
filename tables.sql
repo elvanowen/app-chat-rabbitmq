@@ -52,6 +52,7 @@ DROP TABLE IF EXISTS group_members;
 CREATE TABLE group_members(
   gid int(11),
   uid int(11),
+  PRIMARY KEY (gid, uid),
   FOREIGN KEY (gid) REFERENCES groups(gid),
   FOREIGN KEY (uid) REFERENCES user(uid)
 );
@@ -157,6 +158,7 @@ CREATE TABLE user_friend(
   uid int(11),
   fid int(11),
   create_time timestamp,
+  PRIMARY KEY (uid, fid),
   FOREIGN KEY (uid) REFERENCES user(uid),
   FOREIGN KEY (fid) REFERENCES user(uid)
 );
