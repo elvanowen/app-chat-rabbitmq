@@ -49,7 +49,7 @@ router.get('/list/:gid', function(req, res) {
           console.log(err);
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
@@ -139,7 +139,7 @@ router.post('/delete', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
@@ -178,7 +178,7 @@ router.post('/invite', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
@@ -217,7 +217,7 @@ router.post('/kick', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({

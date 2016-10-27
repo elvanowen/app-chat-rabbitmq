@@ -42,6 +42,11 @@ i.glyphicon {
   background-color: #fff;
 }
 
+.errorMessage {
+  color: red;
+  margin-top: 8px;
+}
+
 .friend-list-wrapper {
   border: 1px solid #eaeaea;
   margin-bottom: 10px;

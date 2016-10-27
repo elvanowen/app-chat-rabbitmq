@@ -29,7 +29,7 @@ router.get('/user/:uid', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
@@ -66,7 +66,7 @@ router.get('/group/:gid', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
@@ -99,7 +99,7 @@ router.post('/user/:uid', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
@@ -130,7 +130,7 @@ router.post('/group/:gid', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({

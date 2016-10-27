@@ -52,6 +52,9 @@ app.controller('groupController', function($scope, $http, $timeout) {
         setTimeout(function(){
             angular.element('input[name="add-group"]').trigger('focus');
         });
+
+        // Clear previous input
+        $scope.addNewGroupInput = ''
     };
 
     $scope.addNewGroup = function(){
@@ -124,10 +127,20 @@ app.controller('friendController', function($scope, $http) {
         setTimeout(function() {
             angular.element('input[name="add-friend"]').trigger('focus');
         });
+
+        // Clear previous input
+        $scope.addNewUserInput = '';
+        $scope.errorMessage = '';
     };
 
     $scope.addNewUser = function(){
-        console.log($scope.addNewUserInput);
+        $http.post("/api/user/add", {username: $scope.addNewUserInput})
+            .then(function(response) {
+                $scope.errorMessage = '';
+                $scope.toggleAddNewUser();
+            }, function(response){
+                $scope.errorMessage = response.data.error
+            });
     }
 });
 
@@ -352,11 +365,6 @@ app.controller('appController', function($scope) {
 
 
 $(function(){
-    // $('.add-new-group, .add-new-user').click(function(){
-    //     var target = $(this).data('target');
-    //     $(target).toggle();
-    // });
-
     // Init first time page load
     var clearIntervalHandler = setInterval(function(){
         var $listItem = $('.group-panel, .friend-panel').find('.friend-list li');
@@ -364,6 +372,5 @@ $(function(){
             $listItem.get(0).click();
             clearInterval(clearIntervalHandler)
         }
-    }, 1000);
-
+    }, 300);
 });

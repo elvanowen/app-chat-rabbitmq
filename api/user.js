@@ -37,7 +37,7 @@ router.post('/register', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json(result)
@@ -77,7 +77,7 @@ router.post('/login', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else if (!result) {
           res.status(400);
@@ -128,7 +128,7 @@ router.get('/uid/:uid', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json(result);
@@ -162,7 +162,7 @@ router.get('/me', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
@@ -205,7 +205,7 @@ router.get('/friends', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
@@ -241,7 +241,7 @@ router.get('/groups', function(req, res) {
         if (err) {
           res.status(500);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
@@ -255,15 +255,28 @@ router.get('/groups', function(req, res) {
 
 // Api for user add friend
 router.post('/add', function(req, res) {
-  var user = req.body;
+  var username = req.body.username;
   var uid = req.session.uid;
+
+  console.log(req.body);
 
   mysql.getConnection(function(err, connection){
     if (err) {
       res.json(err)
     } else {
+      var result;
+
       async.series([function(callback){
-        connection.query('INSERT INTO user_friend(uid, fid, create_time) VALUES(?, ?, NOW())', [uid, user.uid], function(err, rows, fields) {
+        connection.query('SELECT * FROM user WHERE username = ?', [username], function(err, rows, fields) {
+          if (!err) {
+            result = rows.length ? rows[0] : null;
+
+            if (result) callback(null);
+            else callback(new Error('User tidak ditemukan..'))
+          } else callback(err)
+        });
+      }, function(callback){
+        connection.query('INSERT INTO user_friend(uid, fid, create_time) VALUES(?, ?, NOW())', [uid, result.uid], function(err, rows, fields) {
           if (!err) {
             callback(null)
           } else callback(err)
@@ -272,9 +285,9 @@ router.post('/add', function(req, res) {
         connection.release();
 
         if (err) {
-          res.status(500);
+          res.status(400);
           res.json({
-            error: err.message()
+            error: err.message
           })
         } else {
           res.json({
