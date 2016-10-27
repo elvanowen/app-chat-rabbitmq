@@ -18,8 +18,8 @@ router.post('/register', function(req, res) {
       var result;
 
       async.series([function(callback){
-        console.log([user.username, user.password, token]);
-        connection.query('INSERT INTO user(username, password, token) VALUES(?, ?, ?)', [user.username, user.password, token], function(err, rows, fields) {
+        var rand = Math.floor(Math.random() * (3 - 1) + 1);
+        connection.query('INSERT INTO user(username, password, token, photo) VALUES(?, ?, ?, ?)', [user.username, user.password, token, 'http://bootdey.com/img/Content/user_' + rand + '.jpg'], function(err, rows, fields) {
           if (!err) callback(null);
           else callback(err)
         });

@@ -13,22 +13,22 @@ CREATE TABLE user(
 );
 
 INSERT INTO user(username, password, token, photo) VALUES
-('elvan.owen', '12345', 'opa92ujealsdbEsd81DGh', 'http://bootdey.com/img/Content/user_2.jpg'),
-('Alma.Byrd', '12345', 'q3KEhJlorb2u2hKkrD4E', 'http://bootdey.com/img/Content/user_1.jpg'),
-('Shelly.Davidson', '12345', 'OcjoPzVzqHyO2FWlmYdj', 'http://bootdey.com/img/Content/user_3.jpg'),
-('Muriel.Swanson', '12345', 'PKpvswV9YE8UMGfkpnK4', 'http://bootdey.com/img/Content/user_2.jpg'),
-('Angelo.Fitzgerald', '12345', 'rCOSGiO6y9IgG6qLw9Dx', 'http://bootdey.com/img/Content/user_5.jpg'),
-('Samantha.Dean', '12345', 'TJPbqn2yB7qaH6lt61ct', 'http://bootdey.com/img/Content/user_2.jpg'),
-('Jackie.Garza', '12345', '1ioeakkMjrtdawXOZh7k', 'http://bootdey.com/img/Content/user_1.jpg'),
-('Blanche.Dawson', '12345', 'tYktuHbiMhH1CH4QNOmq', 'http://bootdey.com/img/Content/user_6.jpg'),
-('Andre.Ball', '12345', 'oGQH2rIYboFlHgBDZcOy', 'http://bootdey.com/img/Content/user_5.jpg'),
-('Renee.White', '12345', 'xLYGkPIKwn1l3zgB4SJh', 'http://bootdey.com/img/Content/user_2.jpg'),
-('Floyd.Hopkins', '12345', 'E9BfY1Lb8sSJredv9T3Z', 'http://bootdey.com/img/Content/user_6.jpg'),
-('Sheryl.Zimmerman', '12345', '8ou26QqQuuhMzNn8zZ5I', 'http://bootdey.com/img/Content/user_1.jpg'),
-('Agnes.Stevens', '12345', 'npVDowbNACiI4CIdI6C6', 'http://bootdey.com/img/Content/user_6.jpg'),
-('Tommie.Ballard', '12345', '8NxgVfKZZyvLDWtIK6TX', 'http://bootdey.com/img/Content/user_5.jpg'),
-('Connie.Logan', '12345', 'VhpZY33IMcAC6wh3PbxX', 'http://bootdey.com/img/Content/user_5.jpg'),
-('Chelsea.French', '12345', 'V0DtAm2UdCwrxNe0VLAo', 'http://bootdey.com/img/Content/user_6.jpg');
+('van', 'van', 'opa92ujealsdbEsd81DGh', '/images/IU.png'),
+('Alma.Byrd', '12345', 'q3KEhJlorb2u2hKkrD4E', '/images/1.jpg'),
+('Shelly.Davidson', '12345', 'OcjoPzVzqHyO2FWlmYdj', '/images/2.jpg'),
+('Muriel.Swanson', '12345', 'PKpvswV9YE8UMGfkpnK4', '/images/3.jpg'),
+('Angelo.Fitzgerald', '12345', 'rCOSGiO6y9IgG6qLw9Dx', '/images/4.jpg'),
+('Samantha.Dean', '12345', 'TJPbqn2yB7qaH6lt61ct', '/images/5.jpg'),
+('Jackie.Garza', '12345', '1ioeakkMjrtdawXOZh7k', '/images/1.jpg'),
+('Blanche.Dawson', '12345', 'tYktuHbiMhH1CH4QNOmq', '/images/2.jpg'),
+('Andre.Ball', '12345', 'oGQH2rIYboFlHgBDZcOy', '/images/3.jpg'),
+('Renee.White', '12345', 'xLYGkPIKwn1l3zgB4SJh', '/images/4.jpg'),
+('Floyd.Hopkins', '12345', 'E9BfY1Lb8sSJredv9T3Z', '/images/5.jpg'),
+('Sheryl.Zimmerman', '12345', '8ou26QqQuuhMzNn8zZ5I', '/images/1.jpg'),
+('Agnes.Stevens', '12345', 'npVDowbNACiI4CIdI6C6', '/images/2.jpg'),
+('Tommie.Ballard', '12345', '8NxgVfKZZyvLDWtIK6TX', '/images/3.jpg'),
+('Connie.Logan', '12345', 'VhpZY33IMcAC6wh3PbxX', '/images/4.jpg'),
+('Chelsea.French', '12345', 'V0DtAm2UdCwrxNe0VLAo', '/images/5.jpg');
 
 DROP TABLE IF EXISTS groups;
 CREATE TABLE groups(

@@ -163,6 +163,38 @@ app.controller('chatController', function($scope, $http, $timeout) {
     }
 });
 
+app.controller('sendMessageController', function($scope, $http) {
+    $scope.$on('openChatEvent', function(event, args) {
+        var friend = args["friend"];
+        var group = args["group"];
+
+        if (friend) {
+            $scope.friend = friend;
+            $scope.group = null;
+        } else if (group) {
+            $scope.group = group;
+            $scope.friend = null;
+        }
+    });
+
+    $scope.send = function(){
+        var url = '';
+        if ($scope.friend) {
+            url = '/api/chat/user/' + $scope.friend.uid;
+        } else if ($scope.group) {
+            url = '/api/chat/group/' + $scope.group.gid;
+        }
+
+        if (url) {
+            $http.post(url,  { 'message' : $scope.message })
+                .then(function(response){
+                    $scope.message = '';
+                    console.log(response)
+                });
+        }
+    }
+});
+
 app.controller('appController', function($scope) {
     $scope.$on('clickChatEvent', function(event, args) {
         $scope.$broadcast('openChatEvent', args);

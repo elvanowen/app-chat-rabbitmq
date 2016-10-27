@@ -46,7 +46,7 @@
                 <ul class="friend-list">
                     <li ng-repeat="group in groups" ng-click="onGroupClick(group.gid)" ng-class="{active:isActive(group.gid)}">
                         <a href="#" class="clearfix friend-list-item">
-                            <img src="http://bootdey.com/img/Content/user_1.jpg" class="img-circle">
+                            <img src="/images/g1.png" class="img-circle">
                             <div class="friend-name">
                                 <strong>{{group.nama}}</strong>
                             </div>
@@ -119,12 +119,14 @@
                 </ul>
             </div>
             <div class="chat-box bg-white">
-                <div class="input-group">
-                    <input class="form-control border no-shadow no-rounded" placeholder="Type your message here">
-                <span class="input-group-btn">
-                  <button class="btn btn-success no-rounded" type="button">Send</button>
-                </span>
-                </div>
+                <form class="form-send-message" ng-controller="sendMessageController" ng-submit="send()">
+                    <div class="input-group">
+                        <input class="form-control border no-shadow no-rounded" placeholder="Type your message here..." ng-model="message" />
+                        <span class="input-group-btn">
+                          <input class="btn btn-success no-rounded" value="Send" type="submit" />
+                        </span>
+                    </div>
+                </form>
             </div>
         </div>
     </div>
