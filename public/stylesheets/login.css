@@ -1,0 +1,45 @@
+body {
+  background: #f9f9f9 !important;
+  color: #777;
+}
+
+.wrapper {
+  margin-top: 80px;
+  margin-bottom: 80px;
+}
+
+.form-signin {
+  padding: 40px;
+  margin: 0 auto;
+  background-color: #fff;
+  border: 1px solid #eaeaea;
+}
+.form-signin .form-signin-heading {
+  text-align: center;
+  margin-bottom: 20px;
+  font-size: 1.5em;
+}
+
+.form-control {
+  margin-bottom: 10px;
+  outline: 0;
+  border-radius: 2px;
+  height: 42px;
+  border-color: #ddd;
+}
+
+.form-control:focus{
+  border-color: #bbb;
+  -webkit-box-shadow: none;
+  box-shadow: none;
+}
+
+.btn {
+    padding: 8px 16px;
+    background: #FaFaFa;
+    border: 1px solid #DDD;
+    color: #666;
+}
+.btn:hover {
+    background: #F4F4F2;
+}

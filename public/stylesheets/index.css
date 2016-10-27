@@ -7,13 +7,34 @@ body {
   margin-top:20px;
 }
 
+.add-item {
+  display: none;
+}
+
+i.glyphicon {
+  cursor: pointer;
+}
+
+.add-item {
+  padding: 10px;
+  border-bottom: 1px solid #eaeaea;
+}
+.add-item form {
+  display: flex;
+}
+.add-item .grow {
+  flex-grow: 1;
+  margin-right: 5px;
+}
+
 .title {
   padding: 10px;
   font-size: 1.2em;
   font-weight: bold;
+  border-bottom: 1px solid #eaeaea;
 }
 
-.title i {
+.title i:not(:last-child) {
   margin-right: 10px;
 }
 
@@ -28,21 +49,37 @@ body {
 
 .friend-list {
   list-style: none;
-margin-left: -40px;
+  margin-left: -40px;
+  margin-bottom: 0;
 }
 
 .friend-list li {
   border-bottom: 1px solid #eee;
 }
 
-.friend-list li a img {
+.friend-list li div.self-user .btn {
+  border-radius: 100px;
+  font-size: .8em;
+  padding: 3px 8px;
+}
+
+.friend-list li div.self-user .btn {
+  border-radius: 100px;
+  font-size: .8em;
+  padding: 3px 8px;
+  margin-top: 3px;
+}
+
+.friend-list li a.friend-list-item img,
+.friend-list li div.self-user img {
   float: left;
   width: 45px;
   height: 45px;
-  margin-right: 12px;
+  margin-right: 18px;
 }
 
- .friend-list li a {
+ .friend-list li a.friend-list-item,
+ .friend-list li div.self-user {
   position: relative;
   display: block;
   padding: 10px;
@@ -53,24 +90,36 @@ margin-left: -40px;
   -o-transition: all .2s ease;
 }
 
-.friend-list li.active a {
+/*.friend-list li div.self-user {*/
+  /*padding-bottom: 0;*/
+/*}*/
+
+.friend-list li.active a.friend-list-item {
   background-color: #f7f7f7;
 }
 
-.friend-list li a .friend-name,
-.friend-list li a .friend-name:hover {
+.friend-list li a.friend-list-item .friend-name,
+.friend-list li a.friend-list-item .friend-name:hover,
+.friend-list li div.self-user .friend-name,
+.friend-list li div.self-user .friend-name:hover {
   color: #777;
   margin-top: 8px;
 }
 
-.friend-list li a .last-message {
+.friend-list li div.self-user .friend-name,
+.friend-list li div.self-user .friend-name:hover {
+  margin-top: 4px;
+}
+
+.friend-list li a.friend-list-item .last-message,
+.friend-list li div.self-user .last-message {
   width: 65%;
   white-space: nowrap;
   text-overflow: ellipsis;
   overflow: hidden;
 }
 
-.friend-list li a .time {
+.friend-list li a.friend-list-item .time {
   position: absolute;
   top: 10px;
   right: 8px;
@@ -80,7 +129,7 @@ small, .small {
   font-size: 85%;
 }
 
-.friend-list li a .chat-alert {
+.friend-list li a.friend-list-item .chat-alert {
   position: absolute;
   right: 8px;
   top: 27px;
@@ -97,6 +146,7 @@ small, .small {
 .chat {
     list-style: none;
     margin: 0;
+    padding-left: 0;
 }
 
 .chat li img {
@@ -190,7 +240,7 @@ img {
   left: 444px;
   right: 0;*/
   border: 1px solid #eaeaea;
-  border-top: 0;
+  border-top: 0 !important;
   padding: 15px;
   border-top: 1px solid #eee;
   transition: all .5s ease;
@@ -207,4 +257,98 @@ img {
 a:hover, a:active, a:focus {
   text-decoration: none;
   outline: 0;
+}
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+
+.modal-body {
+  padding-top: 0;
+  padding-bottom: 0;
+}
+.modal-body .friend-list li:last-child {
+  border: 0;
+}
+/* Checkbox */
+.control {
+  display: block;
+  padding-left: 30px;
+  cursor: pointer;
+
+  position: absolute;
+  right: 0;
+  top: 15px;
+}
+.control input {
+  position: absolute;
+  z-index: -1;
+  opacity: 0;
+}
+.control__indicator {
+  position: absolute;
+  top: 2px;
+  left: 0;
+  height: 20px;
+  width: 20px;
+  background: #e6e6e6;
+}
+.control--radio .control__indicator {
+  border-radius: 50%;
+}
+.control:hover input ~ .control__indicator,
+.control input:focus ~ .control__indicator {
+  background: #ccc;
+}
+.control input:checked ~ .control__indicator {
+  background: #2aa1c0;
+}
+.control:hover input:not([disabled]):checked ~ .control__indicator,
+.control input:checked:focus ~ .control__indicator {
+  background: #0e647d;
+}
+.control input:disabled ~ .control__indicator {
+  background: #e6e6e6;
+  opacity: 0.6;
+  pointer-events: none;
+}
+.control__indicator:after {
+  content: '';
+  position: absolute;
+  display: none;
+}
+.control input:checked ~ .control__indicator:after {
+  display: block;
+}
+.control--checkbox .control__indicator:after {
+  left: 8px;
+  top: 4px;
+  width: 3px;
+  height: 8px;
+  border: solid #fff;
+  border-width: 0 2px 2px 0;
+  transform: rotate(45deg);
+}
+.control--checkbox input:disabled ~ .control__indicator:after {
+  border-color: #7b7b7b;
+}
+.control--radio .control__indicator:after {
+  left: 7px;
+  top: 7px;
+  height: 6px;
+  width: 6px;
+  border-radius: 50%;
+  background: #fff;
 }

@@ -4,11 +4,44 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-
+var session = require('express-session')
 var routes = require('./routes/index');
-var users = require('./routes/users');
 
 var app = express();
+var server = require('http').Server(app);
+var io = require('socket.io')(server);
+
+var clientSocket = {};
+app.set('clientSocket', clientSocket);
+
+// Init auth for socket io and retain mapping between uid and corresponding socket
+require('socketio-auth')(io, {
+  authenticate: function (socket, data, callback) {
+    //get credentials sent by the client
+    var uid = data.uid;
+
+    if (uid) {
+      if (clientSocket[uid]) {
+        clientSocket[uid] = socket;
+        callback(null, true);
+      }
+    } else {
+      callback(new Error("Not Authorized"));
+    }
+  }
+});
+
+app.use(session({
+    secret: 'gelolulolulolutttt...',
+    resave: false,
+    saveUninitialized: true
+}));
+
+// Setup Database and RabbitMQ Connection
+require('./utils/mysql').init();
+require('./utils/rabbitmq').init(function(){
+  require('./consumers').startListeners();
+});
 
 // view engine setup
 app.set('views', path.join(__dirname, 'views'));
@@ -23,13 +56,16 @@ app.use(cookieParser());
 app.use(express.static(path.join(__dirname, 'public')));
 
 app.use('/', routes);
+app.use('/login', require('./routes/login'));
+app.use('/register', require('./routes/register'));
+app.use('/api', require('./api'));
 // app.use('/users', users);
 
 // catch 404 and forward to error handler
 app.use(function(req, res, next) {
-  var err = new Error('Not Found');
-  err.status = 404;
-  next(err);
+    var err = new Error('Not Found');
+    err.status = 404;
+    next(err);
 });
 
 // error handlers
@@ -57,4 +93,5 @@ app.use(function(req, res, next) {
 // });
 
 
-module.exports = app;
+// module.exports = app;
+module.exports = {app: app, server: server};
