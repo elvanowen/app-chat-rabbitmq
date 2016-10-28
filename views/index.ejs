@@ -17,7 +17,7 @@
                     <ul class="friend-list">
                         <li style="border-bottom: 0">
                             <div class="self-user">
-                                <img src={{me.photo}} class="img-circle" />
+                                <img ng-src={{me.photo}} class="img-circle" />
                                 <div class="friend-name"><strong>{{me.username}}</strong></div>
                                 <div class="last-message text-muted"><a class="btn btn-default" href="/api/user/logout">Logout</a></div>
                             </div>
@@ -46,13 +46,13 @@
                     <ul class="friend-list">
                         <li ng-repeat="group in groups" ng-click="onGroupClick(group.gid)" ng-class="{active:isActive(group.gid)}">
                             <a href="#" class="clearfix friend-list-item">
-                                <img src="/images/g1.png" class="img-circle">
+                                <img ng-src="/images/g1.png" class="img-circle">
                                 <div class="friend-name">
                                     <strong>{{group.nama}}</strong>
                                 </div>
                                 <div class="last-message text-muted">{{group.lastChat.content}}</div>
                                 <small class="time text-muted">{{group.lastChat.create_time}}</small>
-                                <!--<small class="chat-alert label label-danger">1</small>-->
+                                <small class="chat-alert label label-danger" ng-show="countNewChat">{{countNewChat(group.gid)}}</small>
                             </a>
                         </li>
                     </ul>
@@ -80,13 +80,13 @@
                     <ul class="friend-list">
                         <li ng-repeat="friend in friends" ng-click="onUserClick(friend.uid)" ng-class="{active:isActive(friend.uid)}">
                             <a href="#" class="clearfix friend-list-item">
-                                <img src={{friend.photo}} class="img-circle">
+                                <img ng-src={{friend.photo}} class="img-circle">
                                 <div class="friend-name">
                                     <strong>{{friend.username}}</strong>
                                 </div>
                                 <div class="last-message text-muted">{{friend.lastChat.content}}</div>
                                 <small class="time text-muted">{{friend.lastChat.create_time}}</small>
-                                <!--<small class="chat-alert label label-danger">1</small>-->
+                                <small class="chat-alert label label-danger" ng-show="countNewChat">{{countNewChat(friend.uid)}}</small>
                             </a>
                         </li>
                     </ul>
@@ -106,7 +106,7 @@
                     <ul class="chat">
                         <li class="clearfix" ng-repeat="chat in chats" ng-class="{right:isMyChat(chat), left:!isMyChat(chat)}">
                           <span class="chat-img" ng-class="{'pull-right':isMyChat(chat), 'pull-left':!isMyChat(chat)}">
-                            <img src={{user[chat.chat_from].photo}}>
+                            <img ng-src={{user[chat.chat_from].photo}}>
                           </span>
                             <div class="chat-body clearfix">
                                 <div class="header">
@@ -146,7 +146,7 @@
                         <ul class="friend-list">
                             <li ng-repeat="row in data">
                                 <a href="#" class="clearfix friend-list-item">
-                                    <img src={{row.photo}} class="img-circle">
+                                    <img ng-src={{row.photo}} class="img-circle">
                                     <div class="friend-name">
                                         <strong>{{row.name}}</strong>
                                     </div>

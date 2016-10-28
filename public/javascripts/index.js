@@ -82,7 +82,18 @@ app.controller('groupController', function($scope, $http, $timeout) {
                     }
                 });
             });
-    }
+    };
+
+    $scope.groupNewChat = {
+        1: 1
+    };
+    $scope.countNewChat = function(gid){
+        return $scope.groupNewChat[gid] ? $scope.groupNewChat[gid] : '';
+    };
+
+    socket.on('newGroupChat', function (data) {
+
+    });
 });
 
 app.controller('friendController', function($scope, $http) {
@@ -141,7 +152,18 @@ app.controller('friendController', function($scope, $http) {
             }, function(response){
                 $scope.errorMessage = response.data.error
             });
-    }
+    };
+
+    $scope.friendNewChat = {
+        2: 1
+    };
+    $scope.countNewChat = function(uid){
+        return $scope.friendNewChat[uid] ? $scope.friendNewChat[uid] : '';
+    };
+
+    socket.on('newFriendChat', function (data) {
+
+    });
 });
 
 app.controller('chatController', function($scope, $http, $timeout) {
@@ -363,7 +385,6 @@ app.controller('appController', function($scope) {
     });
 });
 
-
 $(function(){
     // Init first time page load
     var clearIntervalHandler = setInterval(function(){
@@ -374,3 +395,5 @@ $(function(){
         }
     }, 300);
 });
+
+var socket = io(window.location.hostname);
