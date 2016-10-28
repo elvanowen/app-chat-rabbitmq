@@ -2,6 +2,7 @@ var rabbitmq = require('../utils/rabbitmq');
 var express = require('express');
 var router = express.Router();
 var async = require('async');
+var socket = require('../utils/socket');
 var mysql = require('../utils/mysql').getPool();
 
 router.get('/user/:uid', function(req, res) {
@@ -85,11 +86,19 @@ router.post('/user/:uid', function(req, res) {
     if (err) {
       res.json(err)
     } else {
-      var result;
+      var newChatId, newChat;
 
       async.series([function(callback){
         connection.query('INSERT INTO chat(chat_from, chat_to, content, create_time) VALUES(?, ?, ?, NOW())', [uid, req.params.uid, req.body.message], function(err, rows, fields) {
           if (!err) {
+            newChatId = rows.insertId;
+            callback(null)
+          } else callback(err)
+        });
+      }, function(callback){
+        connection.query('SELECT * FROM chat WHERE cid = ?', [newChatId], function(err, rows, fields) {
+          if (!err) {
+            newChat = rows[0];
             callback(null)
           } else callback(err)
         });
@@ -105,6 +114,8 @@ router.post('/user/:uid', function(req, res) {
           res.json({
             success: 1
           });
+
+          socket.broadcast("newFriendChat", [uid, req.params.uid], newChat);
         }
       })
     }
@@ -118,9 +129,19 @@ router.post('/group/:gid', function(req, res) {
     if (err) {
       res.json(err)
     } else {
+      var newChatId, newChat;
+      
       async.series([function(callback){
         connection.query('INSERT INTO chat(chat_from, chat_to_group, content, create_time) VALUES(?, ?, ?, NOW())', [uid, req.params.gid, req.body.message], function(err, rows, fields) {
           if (!err) {
+            newChatId = rows.insertId;
+            callback(null)
+          } else callback(err)
+        });
+      }, function(callback){
+        connection.query('SELECT * FROM chat WHERE cid = ?', [newChatId], function(err, rows, fields) {
+          if (!err) {
+            newChat = rows[0];
             callback(null)
           } else callback(err)
         });
@@ -136,6 +157,9 @@ router.post('/group/:gid', function(req, res) {
           res.json({
             success: 1
           });
+
+          // Temporary for testing
+          socket.broadcast("newGroupChat", [uid], newChat);
         }
       })
     }

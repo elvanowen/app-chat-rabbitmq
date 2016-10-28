@@ -50,8 +50,8 @@
                                 <div class="friend-name">
                                     <strong>{{group.nama}}</strong>
                                 </div>
-                                <div class="last-message text-muted">{{group.lastChat.content}}</div>
-                                <small class="time text-muted">{{group.lastChat.create_time}}</small>
+                                <div class="last-message text-muted">{{group.preview.content}}</div>
+                                <small class="time text-muted">{{group.preview.create_time}}</small>
                                 <small class="chat-alert label label-danger" ng-show="countNewChat">{{countNewChat(group.gid)}}</small>
                             </a>
                         </li>
@@ -84,8 +84,8 @@
                                 <div class="friend-name">
                                     <strong>{{friend.username}}</strong>
                                 </div>
-                                <div class="last-message text-muted">{{friend.lastChat.content}}</div>
-                                <small class="time text-muted">{{friend.lastChat.create_time}}</small>
+                                <div class="last-message text-muted">{{friend.preview.content || friend.message.content}}</div>
+                                <small class="time text-muted">{{friend.preview.create_time || friend.message.create_time}}</small>
                                 <small class="chat-alert label label-danger" ng-show="countNewChat">{{countNewChat(friend.uid)}}</small>
                             </a>
                         </li>
@@ -171,9 +171,19 @@
     <script src="http://netdna.bootstrapcdn.com/bootstrap/3.3.4/js/bootstrap.min.js"></script>
     <script src="https://ajax.googleapis.com/ajax/libs/angularjs/1.4.8/angular.min.js"></script>
     <script src="https://cdnjs.cloudflare.com/ajax/libs/moment.js/2.15.2/moment.min.js"></script>
-    <script src="/javascripts/index.js"></script>
+    <script type="text/javascript" src="https://cdn.socket.io/socket.io-1.4.5.js"></script>
     <script type="text/javascript">
+        var socket = io(window.location.hostname + (window.location.port ? ':' + window.location.port : ''));
+        socket.on('connect', function(){
+            socket.emit('authentication', {uid: window.uid});
+            socket.on('authenticated', function() {
+                // use the socket as usual
+                console.log('Socket connected...')
+            });
+        });
+
         window.uid = <%= uid %>
     </script>
+    <script src="/javascripts/index.js"></script>
 </body>
 </html>

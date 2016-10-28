@@ -4,27 +4,27 @@ var favicon = require('serve-favicon');
 var logger = require('morgan');
 var cookieParser = require('cookie-parser');
 var bodyParser = require('body-parser');
-var session = require('express-session')
+var session = require('express-session');
+var chalk = require('chalk');
 var routes = require('./routes/index');
 
 var app = express();
 var server = require('http').Server(app);
-var io = require('socket.io')(server);
+module.exports = {app: app, server: server};
 
-var clientSocket = {};
-app.set('clientSocket', clientSocket);
+var io = require('socket.io')(server);
+app.set('clientSocket', {});
 
 // Init auth for socket io and retain mapping between uid and corresponding socket
 require('socketio-auth')(io, {
   authenticate: function (socket, data, callback) {
-    //get credentials sent by the client
     var uid = data.uid;
 
+    console.log(chalk.blue('Receive socket connection ; UID : ', uid));
+
     if (uid) {
-      if (clientSocket[uid]) {
-        clientSocket[uid] = socket;
+        app.get('clientSocket')[uid] = socket;
         callback(null, true);
-      }
     } else {
       callback(new Error("Not Authorized"));
     }
@@ -94,4 +94,3 @@ app.use(function(req, res, next) {
 
 
 // module.exports = app;
-module.exports = {app: app, server: server};
