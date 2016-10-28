@@ -497,4 +497,16 @@ $(function(){
             clearInterval(clearIntervalHandler)
         }
     }, 300);
+
+    // Adjust chat panel size, make it scrollable
+    // $('.chat-panel').height($('.sidebar-panel').height())
+
+    $(window).on('resize', function(){
+        console.log($('.chat-panel').width())
+        $('.chat-box').outerWidth($('.chat-panel').width());
+    }).trigger('resize'); //on page load
+
+    // setInterval(function(){
+    //     $('.chat-panel').height($('.sidebar-panel').height());
+    // }, 500);
 });

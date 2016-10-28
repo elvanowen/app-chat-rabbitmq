@@ -51,6 +51,9 @@ i.glyphicon {
   border: 1px solid #eaeaea;
   margin-bottom: 10px;
 }
+.friend-list-wrapper:last-child {
+  margin-bottom: 0;
+}
 
 .friend-list {
   list-style: none;
@@ -166,6 +169,18 @@ img {
   max-width: 100%;
 }
 
+.chat-panel {
+  height: 701px;
+  overflow: scroll;
+}
+.group-panel {
+  height: 241px;
+  overflow: scroll;
+}
+.friend-panel {
+  height: 373px;
+  overflow: scroll;
+}
 .chat-body {
   padding-bottom: 20px;
 }
@@ -240,12 +255,10 @@ img {
 }
 
 .chat-box {
-  /*position: fixed;
-  bottom: 0;
-  left: 444px;
-  right: 0;*/
+  position: fixed;
+  bottom: 20px;
+  margin-right: 15px;
   border: 1px solid #eaeaea;
-  border-top: 0 !important;
   padding: 15px;
   border-top: 1px solid #eee;
   transition: all .5s ease;
