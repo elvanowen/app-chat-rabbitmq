@@ -14,6 +14,7 @@ CREATE TABLE user(
 
 INSERT INTO user(username, password, token, photo) VALUES
 ('van', 'van', 'opa92ujealsdbEsd81DGh', '/images/IU.png'),
+('vtc', 'vtc', 'opa92ujealsdbEsd81DGh', '/images/1.jpg'),
 ('Alma.Byrd', '12345', 'q3KEhJlorb2u2hKkrD4E', '/images/1.jpg'),
 ('Shelly.Davidson', '12345', 'OcjoPzVzqHyO2FWlmYdj', '/images/2.jpg'),
 ('Muriel.Swanson', '12345', 'PKpvswV9YE8UMGfkpnK4', '/images/3.jpg'),
@@ -28,7 +29,9 @@ INSERT INTO user(username, password, token, photo) VALUES
 ('Agnes.Stevens', '12345', 'npVDowbNACiI4CIdI6C6', '/images/2.jpg'),
 ('Tommie.Ballard', '12345', '8NxgVfKZZyvLDWtIK6TX', '/images/3.jpg'),
 ('Connie.Logan', '12345', 'VhpZY33IMcAC6wh3PbxX', '/images/4.jpg'),
-('Chelsea.French', '12345', 'V0DtAm2UdCwrxNe0VLAo', '/images/5.jpg');
+('Chelsea.French', '12345', 'V0DtAm2UdCwrxNe0VLAo', '/images/5.jpg'),
+('van1', 'van', 'opa92ujealsdbEsd81DGh', '/images/IU.png'),
+('van2', 'van', 'opa92ujealsdbEsd81DGh', '/images/IU.png');
 
 DROP TABLE IF EXISTS groups;
 CREATE TABLE groups(

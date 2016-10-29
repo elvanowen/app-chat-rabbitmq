@@ -38,10 +38,13 @@ app.controller('groupController', function($scope, $http, $timeout) {
                     $http.get("/api/chat/group/" + group.gid + "?limit=1")
                         .then(function(response) {
                             var preview = response.data.chats.length ? response.data.chats[0] : null;
-                            group.preview = preview;
-
-                            if (group.preview) {
+                            if (preview) {
+                                group.preview = preview;
                                 group.preview.create_time = moment(group.preview.create_time).fromNow();
+                            } else {
+                                group.preview = {
+                                    content: 'New Group Created'
+                                }
                             }
 
                             $scope.groupMap[group.gid] = group;
@@ -84,6 +87,11 @@ app.controller('groupController', function($scope, $http, $timeout) {
                         }
                     }
                 });
+
+                setTimeout(function(){
+                    angular.element('input[name="add-group"]').trigger('blur');
+                    $scope.addNewGroupInput = ''
+                });
             });
     };
 
@@ -91,30 +99,60 @@ app.controller('groupController', function($scope, $http, $timeout) {
     $scope.countNewChat = function(gid){
         return $scope.groupNewChat[gid] ? $scope.groupNewChat[gid] : '';
     };
+    //
+    // socket.on('newGroupChat', function (chat) {
+    //     if (!$scope.groupMap[chat.chat_to_group]){
+    //         // If not exist then push to array
+    //         $scope.groups.push(chat);
+    //     }
+    //
+    //     // Overwrite existing value
+    //     $scope.groupMap[chat.chat_to_group].preview = chat;
+    //
+    //     // Show new notification message if not currently open
+    //     if ($scope.selectedGroup != chat.chat_to_group) {
+    //         $scope.groupNewChat[chat.chat_to_group] = $scope.groupNewChat[chat.chat_to_group] ? $scope.groupNewChat[chat.chat_to_group]++ : 1;
+    //     }
+    // });
 
-    socket.on('newGroupChat', function (chat) {
-        if (!$scope.groupMap[chat.chat_to_group]){
-            // If not exist then push to array
-            $scope.groups.push(chat);
-        }
+    socket.on('newGroupCreated', function(data) {
+        $scope.groups.push({
+            nama: data.group.nama,
+            preview: {
+                content: 'New Group Created'
+            },
+            gid: data.group.gid
+        });
 
-        // Overwrite existing value
-        $scope.groupMap[chat.chat_to_group].preview = chat;
+        $timeout(function() {
+            $scope.$apply();
+        });
 
-        // Show new notification message if not currently open
-        if ($scope.selectedGroup != chat.chat_to_group) {
-            $scope.groupNewChat[chat.chat_to_group] = $scope.groupNewChat[chat.chat_to_group] ? $scope.groupNewChat[chat.chat_to_group]++ : 1;
-        }
+        $scope.groupMap[data.group.gid] = data.group;
     });
 
-    socket.on('newGroupAdd', function (data) {
-        if (!$scope.groupMap[data.uid]){
-            // If not exist then push to array
-            $scope.groups.push(data);
-        }
+    socket.on('groupKickUser', function(data) {
+        $scope.groupMap[data.group.gid].preview.content = 'You have been kicked from this group';
 
-        // Overwrite existing value
-        $scope.groupMap[data.uid] = data;
+        $timeout(function() {
+            $scope.$apply();
+        });
+    });
+
+    socket.on('groupInviteUser', function(data) {
+        $scope.groups.push({
+            nama: data.group.nama,
+            preview: {
+                content: 'You have been invited to this group'
+            },
+            gid: data.group.gid
+        });
+
+        $timeout(function() {
+            $scope.$apply();
+        });
+
+        $scope.groupMap[data.group.gid] = data.group;
     });
 });
 
@@ -149,10 +187,13 @@ app.controller('friendController', function($scope, $http, $timeout) {
                     $http.get("/api/chat/user/" + friend.uid + "?limit=1")
                         .then(function(response) {
                             var preview = response.data.chats.length ? response.data.chats[0] : null;
-                            friend.preview = preview;
-
-                            if (friend.preview) {
+                            if (preview) {
+                                friend.preview = preview;
                                 friend.preview.create_time = moment(friend.preview.create_time).fromNow();
+                            } else {
+                                friend.preview = {
+                                    content: 'Start chatting..'
+                                }
                             }
 
                             $scope.friendMap[friend.uid] = friend;
@@ -174,7 +215,7 @@ app.controller('friendController', function($scope, $http, $timeout) {
     };
 
     $scope.addNewUser = function(){
-        $http.post("/api/user/add", {username: $scope.addNewUserInput})
+        $http.post("/api/user/add", {user : {username: $scope.addNewUserInput}})
             .then(function(response) {
                 $scope.errorMessage = '';
                 $scope.toggleAddNewUser();
@@ -188,28 +229,47 @@ app.controller('friendController', function($scope, $http, $timeout) {
         return $scope.friendNewChat[uid] ? $scope.friendNewChat[uid] : '';
     };
 
-    socket.on('newFriendChat', function (chat) {
-        if (!$scope.friendMap[chat.chat_to]){
-            // If not exist then push to array
-            $scope.friends.push(chat);
+    // socket.on('newFriendChat', function (chat) {
+    //     if (!$scope.friendMap[chat.chat_to]){
+    //         // If not exist then push to array
+    //         $scope.friends.push(chat);
+    //     }
+    //
+    //     // Overwrite existing value
+    //     $scope.friendMap[chat.chat_to].preview = chat;
+    //
+    //     if ($scope.selectedUser != chat.chat_to) {
+    //         $scope.friendNewChat[chat.chat_to] = $scope.friendNewChat[chat.chat_to] ? $scope.friendNewChat[chat.chat_to]++ : 1;
+    //     }
+    // });
+
+    socket.on('userAdd', function (data) {
+        if (window.uid == data.from.uid) {
+            $scope.friends.push({
+                username: data.user.username,
+                photo: data.user.photo,
+                preview: {
+                    content: 'Start chatting..'
+                },
+                uid: data.user.uid
+            });
+        } else {
+            $scope.friends.push({
+                username: data.from.username,
+                photo: data.from.photo,
+                preview: {
+                    content: 'You have been added as friend.'
+                },
+                uid: data.from.uid
+            });
         }
 
-        // Overwrite existing value
-        $scope.friendMap[chat.chat_to].preview = chat;
 
-        if ($scope.selectedUser != chat.chat_to) {
-            $scope.friendNewChat[chat.chat_to] = $scope.friendNewChat[chat.chat_to] ? $scope.friendNewChat[chat.chat_to]++ : 1;
-        }
-    });
+        $timeout(function() {
+            $scope.$apply();
+        });
 
-    socket.on('newFriendAdd', function (data) {
-        if (!$scope.friendMap[data.uid]){
-            // If not exist then push to array
-            $scope.friends.push(data);
-        }
-
-        // Overwrite existing value
-        $scope.friendMap[data.uid] = data;
+        $scope.friendMap[data.user.uid] = data.user;
     });
 });
 
@@ -286,7 +346,7 @@ app.controller('chatController', function($scope, $http, $timeout) {
                                 // Get friend data
                                 $http.get("/api/user/uid/" + chat.chat_from)
                                     .then(function (response) {
-                                        $scope.user[window.uid] = response.data;
+                                        $scope.user[chat.chat_from] = response.data;
                                         $timeout(function () {
                                             $scope.$apply();
                                         });
@@ -313,8 +373,6 @@ app.controller('chatController', function($scope, $http, $timeout) {
     };
 
     $scope.inviteUser = function(){
-        console.log('inviteUser');
-
         $http.get("/api/user/friends")
             .then(function(response) {
                 console.log(response);
@@ -333,7 +391,9 @@ app.controller('chatController', function($scope, $http, $timeout) {
                     data: data,
                     url: '/api/group/invite',
                     body: {
-                        gid: $scope.dataShowing.gid
+                        group: {
+                            gid: $scope.dataShowing.gid
+                        }
                     }
                 });
             });
@@ -346,8 +406,11 @@ app.controller('chatController', function($scope, $http, $timeout) {
                 var data = [];
 
                 for (var i=0;i<members.length;i++){
+                    // Skip self
+                    if (members[i].uid == window.uid) continue;
+
                     data.push({
-                        uid: friends[i].uid,
+                        uid: members[i].uid,
                         name: members[i].username,
                         photo: members[i].photo
                     })
@@ -357,7 +420,9 @@ app.controller('chatController', function($scope, $http, $timeout) {
                     data: data,
                     url: '/api/group/kick',
                     body: {
-                        gid: $scope.dataShowing.gid
+                        group: {
+                            gid: $scope.dataShowing.gid
+                        }
                     }
                 });
             });
@@ -370,7 +435,7 @@ app.controller('chatController', function($scope, $http, $timeout) {
             // Get friend data
             $http.get("/api/user/uid/" + chat.chat_from)
                 .then(function(response) {
-                    $scope.user[window.uid] = response.data;
+                    $scope.user[chat.chat_from] = response.data;
                     $timeout(function() {
                         $scope.$apply();
                     });
@@ -390,7 +455,7 @@ app.controller('chatController', function($scope, $http, $timeout) {
             // Get friend data
             $http.get("/api/user/uid/" + chat.chat_from)
                 .then(function(response) {
-                    $scope.user[window.uid] = response.data;
+                    $scope.user[chat.chat_from] = response.data;
                     $timeout(function() {
                         $scope.$apply();
                     });
@@ -490,23 +555,41 @@ app.controller('appController', function($scope) {
 
 $(function(){
     // Init first time page load
-    var clearIntervalHandler = setInterval(function(){
-        var $listItem = $('.group-panel, .friend-panel').find('.friend-list li');
-        if ($listItem.length) {
-            $listItem.get(0).click();
-            clearInterval(clearIntervalHandler)
-        }
+    // var clearIntervalHandler = setInterval(function(){
+    //     var $listItem = $('.group-panel, .friend-panel').find('.friend-list li');
+    //     if ($listItem.length) {
+    //         $listItem.get(0).click();
+    //         clearInterval(clearIntervalHandler)
+    //     }
+    // }, 300);
+    //
+    // setTimeout(function(){
+    //     clearInterval(clearIntervalHandler);
+    // }, 10000);
+
+    // var $listItem = $('.group-panel, .friend-panel').find('.friend-list li');
+    // if ($listItem.length) {
+    //     $listItem.get(0).click();
+    //     clearInterval(clearIntervalHandler)
+    // }
+
+    // Chat Panel
+    $('.chat-box').outerWidth($('.chat-panel').width());
+
+    clearIntervalHandler = setInterval(function(){
+        $(window).on('resize', function(){
+            var spaceSize = $('body > .container').height() - $('.user-panel').outerHeight(true) - 10;
+
+            // Sidebar Panel
+            $('.group-panel').outerHeight(spaceSize * 0.4);
+            $('.friend-panel').outerHeight(spaceSize * 0.6 - 30);
+
+            // Adjust chat panel size, make it scrollable
+            $('.chat-panel').height($('.sidebar-panel').height())
+        }).trigger('resize'); //on page load
     }, 300);
 
-    // Adjust chat panel size, make it scrollable
-    // $('.chat-panel').height($('.sidebar-panel').height())
-
-    $(window).on('resize', function(){
-        console.log($('.chat-panel').width())
-        $('.chat-box').outerWidth($('.chat-panel').width());
-    }).trigger('resize'); //on page load
-
-    // setInterval(function(){
-    //     $('.chat-panel').height($('.sidebar-panel').height());
-    // }, 500);
+    setTimeout(function(){
+        clearInterval(clearIntervalHandler);
+    }, 10000);
 });

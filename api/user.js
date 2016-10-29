@@ -255,48 +255,28 @@ router.get('/groups', function(req, res) {
 
 // Api for user add friend
 router.post('/add', function(req, res) {
-  var username = req.body.username;
-  var uid = req.session.uid;
+  var data = {
+    body: req.body,
+    session: req.session
+  };
+  var connection = rabbitmq.getConnection();
 
-  console.log(req.body);
-
-  mysql.getConnection(function(err, connection){
-    if (err) {
-      res.json(err)
-    } else {
-      var result;
-
-      async.series([function(callback){
-        connection.query('SELECT * FROM user WHERE username = ?', [username], function(err, rows, fields) {
-          if (!err) {
-            result = rows.length ? rows[0] : null;
-
-            if (result) callback(null);
-            else callback(new Error('User tidak ditemukan..'))
-          } else callback(err)
-        });
-      }, function(callback){
-        connection.query('INSERT INTO user_friend(uid, fid, create_time) VALUES(?, ?, NOW())', [uid, result.uid], function(err, rows, fields) {
-          if (!err) {
-            callback(null)
-          } else callback(err)
-        });
-      }], function(err){
-        connection.release();
-
-        if (err) {
-          res.status(400);
+  if (connection) {
+    connection.exchange('user_controller', options = {type: 'direct', confirm: true}, function (exchange) {
+      exchange.publish('user_add', data, options = {}, function(transmissionFailed){
+        if (transmissionFailed){
+          res.status(500);
           res.json({
-            error: err.message
+            error: 1
           })
-        } else {
+        }else{
           res.json({
             success: 1
-          });
+          })
         }
       })
-    }
-  })
+    });
+  }
 });
 
 module.exports = router;
