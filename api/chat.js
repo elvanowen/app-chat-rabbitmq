@@ -115,7 +115,8 @@ router.post('/user/:uid', function(req, res) {
             success: 1
           });
 
-          socket.broadcast("newFriendChat", [uid, req.params.uid], newChat);
+          // Temporary for testing
+          // socket.broadcast("newFriendChat", [uid, req.params.uid], newChat);
         }
       })
     }
@@ -159,7 +160,7 @@ router.post('/group/:gid', function(req, res) {
           });
 
           // Temporary for testing
-          socket.broadcast("newGroupChat", [uid], newChat);
+          // socket.broadcast("newGroupChat", [uid], newChat);
         }
       })
     }
