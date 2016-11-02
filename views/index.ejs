@@ -37,7 +37,7 @@
                     <div class="add-item" ng-show="isAddNewGroup">
                         <form class="form-inline" ng-submit="addNewGroup()">
                             <input class="form-control grow" type="text" name="add-group" ng-model="addNewGroupInput" />
-                            <input class="form-control btn btn-default" type="button" value="Add" />
+                            <input class="form-control btn btn-default" type="submit" value="Add" />
                         </form>
                     </div>
 
@@ -70,7 +70,7 @@
                     <div class="add-item" ng-show="isAddNewUser">
                         <form class="form-inline" ng-submit="addNewUser()">
                             <input class="form-control grow" type="text" name="add-friend" ng-model="addNewUserInput" />
-                            <input class="form-control btn btn-default" type="button" value="Add" />
+                            <input class="form-control btn btn-default" type="submit" value="Add" />
                         </form>
                         <div class="errorMessage" ng-bind="errorMessage"></div>
                     </div>
