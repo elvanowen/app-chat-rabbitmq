@@ -79,92 +79,143 @@ router.get('/group/:gid', function(req, res) {
   })
 });
 
+// Api for chat user
 router.post('/user/:uid', function(req, res) {
-  var uid = req.session.uid;
-
-  mysql.getConnection(function(err, connection){
-    if (err) {
-      res.json(err)
-    } else {
-      var newChatId, newChat;
-
-      async.series([function(callback){
-        connection.query('INSERT INTO chat(chat_from, chat_to, content, create_time) VALUES(?, ?, ?, NOW())', [uid, req.params.uid, req.body.message], function(err, rows, fields) {
-          if (!err) {
-            newChatId = rows.insertId;
-            callback(null)
-          } else callback(err)
-        });
-      }, function(callback){
-        connection.query('SELECT * FROM chat WHERE cid = ?', [newChatId], function(err, rows, fields) {
-          if (!err) {
-            newChat = rows[0];
-            callback(null)
-          } else callback(err)
-        });
-      }], function(err){
-        connection.release();
-
-        if (err) {
+  var data = {
+    body: req.body,
+    session: req.session,
+    to_uid: req.params.uid
+  };
+  var connection = rabbitmq.getConnection();
+  if (connection) {
+    connection.exchange('chat_controller', options = {type: 'direct', confirm: true}, function (exchange) {
+      exchange.publish('chat_user', data, options = {}, function(transmissionFailed){
+        if (transmissionFailed){
           res.status(500);
           res.json({
-            error: err.message
+            error: 1
           })
-        } else {
+        }else{
           res.json({
             success: 1
-          });
-
-          // Temporary for testing
-          // socket.broadcast("newFriendChat", [uid, req.params.uid], newChat);
+          })
         }
       })
-    }
-  })
+    });
+  }
+
+
+  //var uid = req.session.uid;
+  //
+  //mysql.getConnection(function(err, connection){
+  //  if (err) {
+  //    res.json(err)
+  //  } else {
+  //    var newChatId, newChat;
+  //
+  //    async.series([function(callback){
+  //      connection.query('INSERT INTO chat(chat_from, chat_to, content, create_time) VALUES(?, ?, ?, NOW())', [uid, req.params.uid, req.body.message], function(err, rows, fields) {
+  //        if (!err) {
+  //          newChatId = rows.insertId;
+  //          callback(null)
+  //        } else callback(err)
+  //      });
+  //    }, function(callback){
+  //      connection.query('SELECT * FROM chat WHERE cid = ?', [newChatId], function(err, rows, fields) {
+  //        if (!err) {
+  //          newChat = rows[0];
+  //          callback(null)
+  //        } else callback(err)
+  //      });
+  //    }], function(err){
+  //      connection.release();
+  //
+  //      if (err) {
+  //        res.status(500);
+  //        res.json({
+  //          error: err.message
+  //        })
+  //      } else {
+  //        res.json({
+  //          success: 1
+  //        });
+  //
+  //        // Temporary for testing
+  //        // socket.broadcast("newFriendChat", [uid, req.params.uid], newChat);
+  //      }
+  //    })
+  //  }
+  //})
 });
 
+// Api for group chat
 router.post('/group/:gid', function(req, res) {
-  var uid = req.session.uid;
-
-  mysql.getConnection(function(err, connection){
-    if (err) {
-      res.json(err)
-    } else {
-      var newChatId, newChat;
-      
-      async.series([function(callback){
-        connection.query('INSERT INTO chat(chat_from, chat_to_group, content, create_time) VALUES(?, ?, ?, NOW())', [uid, req.params.gid, req.body.message], function(err, rows, fields) {
-          if (!err) {
-            newChatId = rows.insertId;
-            callback(null)
-          } else callback(err)
-        });
-      }, function(callback){
-        connection.query('SELECT * FROM chat WHERE cid = ?', [newChatId], function(err, rows, fields) {
-          if (!err) {
-            newChat = rows[0];
-            callback(null)
-          } else callback(err)
-        });
-      }], function(err){
-        connection.release();
-
-        if (err) {
+  var data = {
+    body: req.body,
+    session: req.session,
+    to_gid: req.params.gid
+  };
+  var connection = rabbitmq.getConnection();
+  if (connection) {
+    connection.exchange('chat_controller', options = {type: 'direct', confirm: true}, function (exchange) {
+      exchange.publish('chat_group', data, options = {}, function (transmissionFailed) {
+        if (transmissionFailed) {
           res.status(500);
           res.json({
-            error: err.message
+            error: 1
           })
         } else {
           res.json({
             success: 1
-          });
-
-          // Temporary for testing
-          // socket.broadcast("newGroupChat", [uid], newChat);
+          })
         }
       })
-    }
-  })
+    });
+  }
+
+
+
+  //var uid = req.session.uid;
+  //
+  //mysql.getConnection(function(err, connection){
+  //  if (err) {
+  //    res.json(err)
+  //  } else {
+  //    var newChatId, newChat;
+  //
+  //    async.series([function(callback){
+  //      connection.query('INSERT INTO chat(chat_from, chat_to_group, content, create_time) VALUES(?, ?, ?, NOW())', [uid, req.params.gid, req.body.message], function(err, rows, fields) {
+  //        if (!err) {
+  //          newChatId = rows.insertId;
+  //          callback(null)
+  //        } else callback(err)
+  //      });
+  //    }, function(callback){
+  //      connection.query('SELECT * FROM chat WHERE cid = ?', [newChatId], function(err, rows, fields) {
+  //        if (!err) {
+  //          newChat = rows[0];
+  //          callback(null)
+  //        } else callback(err)
+  //      });
+  //    }], function(err){
+  //      connection.release();
+  //
+  //      if (err) {
+  //        res.status(500);
+  //        res.json({
+  //          error: err.message
+  //        })
+  //      } else {
+  //        res.json({
+  //          success: 1
+  //        });
+  //
+  //        // Temporary for testing
+  //        // socket.broadcast("newGroupChat", [uid], newChat);
+  //      }
+  //    })
+  //  }
+  //})
 });
 
 module.exports = router;

@@ -99,21 +99,26 @@ app.controller('groupController', function($scope, $http, $timeout) {
     $scope.countNewChat = function(gid){
         return $scope.groupNewChat[gid] ? $scope.groupNewChat[gid] : '';
     };
-    //
-    // socket.on('newGroupChat', function (chat) {
-    //     if (!$scope.groupMap[chat.chat_to_group]){
-    //         // If not exist then push to array
-    //         $scope.groups.push(chat);
-    //     }
-    //
-    //     // Overwrite existing value
-    //     $scope.groupMap[chat.chat_to_group].preview = chat;
-    //
-    //     // Show new notification message if not currently open
-    //     if ($scope.selectedGroup != chat.chat_to_group) {
-    //         $scope.groupNewChat[chat.chat_to_group] = $scope.groupNewChat[chat.chat_to_group] ? $scope.groupNewChat[chat.chat_to_group]++ : 1;
-    //     }
-    // });
+
+     socket.on('newGroupChat', function (chat) {
+         console.log("here")
+         if (!$scope.groupMap[chat.chat_to_group]){
+             // If not exist then push to array
+             $scope.groups.push(chat);
+         }
+
+         // Overwrite existing value
+         $scope.groupMap[chat.chat_to_group].preview = chat;
+
+         // Show new notification message if not currently open
+         if ($scope.selectedGroup != chat.chat_to_group) {
+             $scope.groupNewChat[chat.chat_to_group] = $scope.groupNewChat[chat.chat_to_group] ? ++$scope.groupNewChat[chat.chat_to_group] : 1;
+         }
+
+         $timeout(function() {
+             $scope.$apply();
+         });
+     });
 
     socket.on('newGroupCreated', function(data) {
         $scope.groups.push({
@@ -229,19 +234,39 @@ app.controller('friendController', function($scope, $http, $timeout) {
         return $scope.friendNewChat[uid] ? $scope.friendNewChat[uid] : '';
     };
 
-    // socket.on('newFriendChat', function (chat) {
-    //     if (!$scope.friendMap[chat.chat_to]){
-    //         // If not exist then push to array
-    //         $scope.friends.push(chat);
-    //     }
-    //
-    //     // Overwrite existing value
-    //     $scope.friendMap[chat.chat_to].preview = chat;
-    //
-    //     if ($scope.selectedUser != chat.chat_to) {
-    //         $scope.friendNewChat[chat.chat_to] = $scope.friendNewChat[chat.chat_to] ? $scope.friendNewChat[chat.chat_to]++ : 1;
-    //     }
-    // });
+
+    socket.on('newFriendChatSelf', function (chat) {
+        if (!$scope.friendMap[chat.chat_to]){
+            // If not exist then push to array
+            $scope.friends.push(chat);
+        }
+
+        // Overwrite existing value
+        $scope.friendMap[chat.chat_to].preview = chat;
+
+        $timeout(function() {
+            $scope.$apply();
+        });
+    });
+
+     socket.on('newFriendChat', function (chat) {
+         if (!$scope.friendMap[chat.chat_from]){
+             // If not exist then push to array
+             $scope.friends.push(chat);
+         }
+
+         // Overwrite existing value
+         $scope.friendMap[chat.chat_from].preview = chat;
+
+
+         if ($scope.selectedUser != chat.chat_from) {
+             $scope.friendNewChat[chat.chat_from] = $scope.friendNewChat[chat.chat_from] ? ++$scope.friendNewChat[chat.chat_from] : 1;
+         }
+
+         $timeout(function() {
+             $scope.$apply();
+         });
+     });
 
     socket.on('userAdd', function (data) {
         if (window.uid == data.from.uid) {
@@ -428,6 +453,30 @@ app.controller('chatController', function($scope, $http, $timeout) {
             });
     };
 
+    socket.on('newFriendChatSelf', function (chat) {
+        chat.create_time = moment(chat.create_time).fromNow();
+
+        if (!$scope.hasUserData[chat.chat_to]) {
+            // Get friend data
+            $http.get("/api/user/uid/" + chat.chat_to)
+                .then(function(response) {
+                    $scope.user[chat.chat_to] = response.data;
+                    $timeout(function() {
+                        $scope.$apply();
+                    });
+                });
+
+            $scope.hasUserData[chat.chat_to] = true;
+        }
+
+        $scope.friendChat[chat.chat_to] = $scope.friendChat[chat.chat_to] || [];
+        $scope.friendChat[chat.chat_to].push(chat);
+
+        $timeout(function() {
+            $scope.$apply();
+        });
+    });
+
     socket.on('newFriendChat', function (chat) {
         chat.create_time = moment(chat.create_time).fromNow();
 
@@ -444,8 +493,12 @@ app.controller('chatController', function($scope, $http, $timeout) {
             $scope.hasUserData[chat.chat_from] = true;
         }
 
-        $scope.friendChat[chat.chat_to] = $scope.friendChat[chat.chat_to] || [];
-        $scope.friendChat[chat.chat_to].push(chat);
+        $scope.friendChat[chat.chat_from] = $scope.friendChat[chat.chat_from] || [];
+        $scope.friendChat[chat.chat_from].push(chat);
+
+        $timeout(function() {
+            $scope.$apply();
+        });
     });
 
     socket.on('newGroupChat', function (chat) {
